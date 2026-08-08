@@ -25,8 +25,8 @@
   </nav>
 
   <div class="mob-nav" id="mobNav">
-    <a onclick="scrollSection('katalog');toggleMob()">Katalog</a>
-    <a onclick="scrollSection('cabang');toggleMob()">Cabang</a>
+    <a href="#katalog" onclick="goToMobileSection('katalog'); return false;">Katalog</a>
+    <a href="#cabang" onclick="goToMobileSection('cabang'); return false;">Cabang</a>
     <button id="mobLoginBtn" onclick="openAuthModal();toggleMob()">Masuk</button>
     <button id="mobDashBtn" style="display:none" onclick="openDashboard();toggleMob()">Dashboard</button>
   </div>

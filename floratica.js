@@ -246,8 +246,16 @@ function scrollSection(id) {
   const doScroll = () => {
     const el = $(id);
     if (!el) return;
-    const offset = 80;
+    const offset = window.innerWidth <= 768 ? 68 : 80;
     const target = el.getBoundingClientRect().top + window.pageYOffset - offset;
+
+    // Native scrolling lebih stabil pada Chrome Android, terutama sesudah
+    // menu navigasi mobile baru saja ditutup.
+    if (window.innerWidth <= 768) {
+      window.scrollTo({ top: target, behavior: 'smooth' });
+      return;
+    }
+
     // Gunakan GSAP ScrollToPlugin untuk animasi scroll yang smooth & dioptimasi
     gsap.to(window, {
       scrollTo: { y: target, autoKill: true },
@@ -297,6 +305,12 @@ function closeModal(id, e) {
 
 function toggleMob() {
   $('mobNav').classList.toggle('open');
+}
+
+function goToMobileSection(id) {
+  // Tutup menu sebelum scroll supaya panel tidak menutupi tujuan di layar.
+  $('mobNav').classList.remove('open');
+  scrollSection(id);
 }
 
 function goHome(scroll = true) {
