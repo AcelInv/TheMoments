@@ -1314,6 +1314,11 @@
    RESPONSIVE — DASHBOARD
 ══════════════════════════════════════════ */
 @media (max-width: 768px) {
+  body.dashboard-open .navbar,
+  body.dashboard-open .mob-nav {
+    display: none !important;
+  }
+
   .dash-layout {
     grid-template-columns: 1fr;
   }
@@ -1325,7 +1330,7 @@
     bottom: 0;
     width: 260px;
     height: 100vh;
-    z-index: 1001;
+    z-index: 2001;
     transition: left .3s cubic-bezier(0.165, 0.84, 0.44, 1);
     box-shadow: 4px 0 20px rgba(0, 0, 0, 0.15);
   }
@@ -1336,10 +1341,65 @@
 
   .dash-header-mob {
     display: flex;
+    margin: -16px -16px 24px;
+    padding: 14px 16px;
+    top: 0;
   }
 
   .dash-main {
     padding: 16px;
+  }
+
+  .panel-title {
+    font-size: 28px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+  }
+
+  .stat-cards,
+  .stat-grid,
+  .user-stats {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .us-card,
+  .stat-card {
+    padding: 18px 16px;
+  }
+
+  .dash-section-head {
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .search-bar {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .add-prod-btn {
+    align-self: flex-start;
+  }
+
+  .data-table {
+    min-width: 620px;
+  }
+
+  .table-wrap {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .form-row-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .pm-head,
+  .pm-body,
+  .pm-foot {
+    padding-left: 18px;
+    padding-right: 18px;
   }
 
   .trend-header {

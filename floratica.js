@@ -318,6 +318,11 @@ function transitionToScreen(targetId, onEnterComplete) {
     return;
   }
 
+  // Dashboard memiliki navigasi sendiri. Menandai body membuat header toko
+  // tidak bertumpuk dengan header dashboard pada layar kecil.
+  document.body.classList.toggle('dashboard-open', targetId === 'dashScreen');
+  if (targetId === 'dashScreen') $('mobNav').classList.remove('open');
+
   // Kill semua ScrollTrigger dari screen yang sedang aktif untuk mencegah memory leak
   if (active) {
     ScrollTrigger.getAll().forEach(st => {
