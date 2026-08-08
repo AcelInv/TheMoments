@@ -2765,6 +2765,9 @@ async function fetchTestimonials() {
     const res = await fetch('backend/api/reviews.php?limit=3');
     const json = await res.json();
     if (json.status !== 'success') throw new Error();
+    const reviewCount = Array.isArray(json.data) ? json.data.length : 0;
+    grid.classList.toggle('is-single', reviewCount === 1);
+    grid.classList.toggle('is-two', reviewCount === 2);
     grid.innerHTML = json.data.length ? json.data.map(review => {
       const name = review.user_name || 'Pelanggan';
       const initials = name.split(/\s+/).slice(0, 2).map(part => part[0]).join('').toUpperCase();
@@ -2775,6 +2778,7 @@ async function fetchTestimonials() {
       return `<div class="testi-card"><div class="testi-stars" role="img" aria-label="Rating ${rating} dari 5">${stars}</div><p class="testi-txt">&ldquo;${esc(review.comment || 'Ulasan tanpa komentar.')}&rdquo;</p><div class="testi-auth"><div class="testi-av" style="font-size:14px;font-weight:700;color:var(--sage);background:var(--sage3);display:flex;align-items:center;justify-content:center">${esc(initials)}</div><div><div class="testi-name">${esc(name)}</div><div class="testi-loc">${esc(date)}</div>${product}</div></div></div>`;
     }).join('') : '<p class="testi-empty">Belum ada ulasan pelanggan.</p>';
   } catch (error) {
+    grid.classList.remove('is-single', 'is-two');
     grid.innerHTML = '<p style="text-align:center;color:var(--muted)">Ulasan belum dapat dimuat.</p>';
   }
 }

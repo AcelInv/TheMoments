@@ -947,6 +947,15 @@ textarea {
   gap: 20px
 }
 
+.testi-grid.is-single {
+  grid-template-columns: minmax(0, 520px);
+  justify-content: center;
+}
+
+.testi-grid.is-two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .testi-card {
   background: transparent;
   padding: 40px 0;
@@ -1041,6 +1050,11 @@ textarea {
   }
 
   .testi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .testi-grid.is-single,
+  .testi-grid.is-two {
     grid-template-columns: 1fr;
   }
 }
