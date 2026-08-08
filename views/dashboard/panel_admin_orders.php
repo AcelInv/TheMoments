@@ -11,9 +11,9 @@
           <th>Pelanggan</th>
           <th>Items</th>
           <th>Total</th>
+          <th>Metode</th>
           <th>Bayar</th>
           <th>Status</th>
-          <th>Aksi</th>
         </tr>
       </thead>
       <tbody id="adminOrdersBody"></tbody>

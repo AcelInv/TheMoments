@@ -38,7 +38,7 @@ if(!empty($data->id) && !empty($data->status)){
             $stmt->bindParam(":id", $data->id);
         } else {
             $query = "INSERT INTO payments (order_id, payment_status, payment_method, amount) 
-                      SELECT id, :status, 'transfer_bank', total_amount FROM orders WHERE id = :id";
+                      SELECT id, :status, 'belum_dipilih', total_amount FROM orders WHERE id = :id";
             $stmt = $db->prepare($query);
             $stmt->bindParam(":status", $data->status);
             $stmt->bindParam(":id", $data->id);

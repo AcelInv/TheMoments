@@ -37,7 +37,7 @@ try {
         $order['date']   = date('d M Y', strtotime($order['created_at']));
         $order['num']    = $order['invoice_number'];
         $order['payStatus'] = $order['payment_status'] ?: 'belum_bayar';
-        $order['payMethod'] = $order['payment_method'] ?: 'qris';
+        $order['payMethod'] = $order['payment_method'] ?: 'belum_dipilih';
         $addr = strtolower(trim($order['shipping_address'] ?? ''));
         // Classify: if address contains meaningful text → delivery, else → pickup
         $isDelivery = !empty($addr)

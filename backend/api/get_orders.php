@@ -69,7 +69,8 @@ try {
         $order['userId'] = $order['user_id'];
         $order['customerName'] = $order['customer_name'];
         $order['customerEmail'] = $order['customer_email'];
-        $order['payMethod'] = $order['payment_method'] ?: 'transfer_bank';
+        $paymentMethod = $order['payment_method'] ?: 'belum_dipilih';
+        $order['payMethod'] = $paymentMethod === 'bank_transfer' ? 'transfer' : $paymentMethod;
         $order['payStatus'] = $order['payment_status'] ?: 'belum_bayar';
         $order['date'] = date('d M Y', strtotime($order['created_at']));
     }

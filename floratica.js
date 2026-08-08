@@ -50,6 +50,13 @@ let checkoutSubmitting = false;
 const fmt = n => 'Rp ' + Number(n).toLocaleString('id-ID');
 const $ = id => document.getElementById(id);
 const validateEmail = email => /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(email);
+const paymentMethodLabel = method => ({
+  belum_dipilih: 'Belum Dipilih',
+  qris: 'QRIS',
+  transfer: 'Transfer Bank',
+  bank_transfer: 'Transfer Bank',
+  cash: 'Bayar di Tempat'
+})[method] || 'Belum Dipilih';
 const esc = str => {
   if (!str) return '';
   return String(str)
@@ -215,7 +222,7 @@ async function fetchOrders() {
         total: Number(o.total_amount || o.total || 0),
         status: o.status || 'menunggu',
         payStatus: o.payment_status || o.payStatus || 'belum_bayar',
-        payMethod: o.payment_method || o.payMethod || 'qris',
+        payMethod: (o.payment_method === 'bank_transfer' ? 'transfer' : o.payment_method) || o.payMethod || 'belum_dipilih',
         date: o.created_at ? o.created_at.split(' ')[0] : '2026-08-07',
         items: o.items || [],
         userId: o.user_id || o.userId || 1
@@ -765,7 +772,7 @@ function renderOrderCard(order) {
       <div class="order-head">
         <div>
           <div class="order-num">${order.num}</div>
-          <div class="order-date">${order.date} · ${order.payMethod}</div>
+          <div class="order-date">${order.date} · ${paymentMethodLabel(order.payMethod)}</div>
         </div>
         <span class="status-chip ${order.status}">${statusLabel(order.status)}</span>
       </div>
@@ -930,6 +937,16 @@ function renderAdminOrders() {
       <td>${o.items.length} item</td>
       <td style="font-weight:600;color:var(--sage)">${fmt(o.total)}</td>
       <td>
+        <select style="font-size:12px;border:1.5px solid var(--cream3);border-radius:8px;padding:4px 8px;background:#fff" onchange="changePaymentMethod('${o.id}',this.value)">
+          ${[
+            ['belum_dipilih', 'Belum Dipilih'],
+            ['qris', 'QRIS'],
+            ['transfer', 'Transfer Bank'],
+            ['cash', 'Bayar di Tempat']
+          ].map(([value, label]) => `<option value="${value}" ${o.payMethod === value ? 'selected' : ''}>${label}</option>`).join('')}
+        </select>
+      </td>
+      <td>
         <select style="font-size:12px;border:1.5px solid var(--cream3);border-radius:8px;padding:4px 8px;background:#fff" onchange="changePayStatus('${o.id}',this.value)">
           <option value="belum_bayar" ${o.payStatus === 'belum_bayar' ? 'selected' : ''}>Belum Bayar</option>
           <option value="lunas" ${o.payStatus === 'lunas' ? 'selected' : ''}>Lunas</option>
@@ -942,6 +959,30 @@ function renderAdminOrders() {
         </select>
       </td>
     </tr>`).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">Tidak ada pesanan</td></tr>';
+}
+
+async function changePaymentMethod(id, paymentMethod) {
+  try {
+    const res = await fetch('backend/api/update_payment_method.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, payment_method: paymentMethod })
+    });
+    const data = await res.json();
+    if (data.status === 'success') {
+      const order = state.orders.find(item => Number(item.id) === Number(id));
+      if (order) order.payMethod = paymentMethod;
+      toast('Metode pembayaran diperbarui.', 'green');
+      renderAdminOrders();
+    } else {
+      toast('Gagal update metode: ' + data.message, 'rose');
+      fetchOrders();
+    }
+  } catch (error) {
+    console.error('Update payment method error:', error);
+    toast('Kesalahan jaringan', 'rose');
+    fetchOrders();
+  }
 }
 
 async function changeOrderStatus(id, status) {
@@ -1221,7 +1262,7 @@ function renderRepFinance() {
           <td>${esc(o.customer_name || o.customerName || 'Pelanggan')}</td>
           <td style="font-weight:600;color:var(--sage)">${fmt(o.total || o.total_amount || 0)}</td>
           <td><span class="status-chip ${o.payStatus === 'lunas' || o.status === 'selesai' ? 'confirmed' : 'cancelled'}">${statusLabel(o.payStatus || 'belum_bayar')}</span></td>
-          <td style="text-transform:uppercase;font-size:12px">${o.payMethod || 'QRIS'}</td>
+          <td style="font-size:12px">${paymentMethodLabel(o.payMethod)}</td>
           <td style="color:var(--muted);font-size:12px">${o.date || (o.created_at ? o.created_at.split(' ')[0] : '—')}</td>
         </tr>`).join('')
       : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Tidak ada data pembayaran</td></tr>';
@@ -2175,22 +2216,11 @@ async function doPaymentNew() {
 
   const addr = $('coAddress') ? $('coAddress').value.trim() : '';
   const note = $('coNote') ? $('coNote').value.trim() : '';
-  const selectedPayment = document.querySelector('input[name="coPaymentMethod"]:checked');
-  const payMethod = selectedPayment ? selectedPayment.value : 'qris';
-  const paymentLabels = {
-    qris: 'QRIS',
-    transfer: 'Transfer Bank',
-    cash: 'Bayar di Tempat (Cash)'
-  };
-  const paymentLabel = paymentLabels[payMethod] || 'QRIS';
-  state.payMethod = payMethod;
-
   const orderId = 'FLR-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
 
   const order = {
     total: getTotal(),
     shippingCity: addr || 'Dikonfirmasi via WhatsApp',
-    payMethod,
     items: state.cart.map(i => ({ ...i }))
   };
 
@@ -2222,7 +2252,6 @@ async function doPaymentNew() {
         user_id: userId,
         invoice_number: orderId,
         shipping_address: order.shippingCity,
-        payment_method: order.payMethod,
         delivery_at: date,
         customer_note: note,
         items: order.items
@@ -2246,7 +2275,6 @@ async function doPaymentNew() {
       msg += `*Saya ingin memesan:*\n\n`;
       msg += `${itemLines}\n\n`;
       msg += `*Total: ${fmt(order.total)}*\n`;
-      msg += `*Metode Pembayaran:* ${paymentLabel}\n`;
       msg += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
       msg += `*Nama:* ${fName}\n`;
       msg += `*Telepon:* ${phone}\n`;
@@ -2267,7 +2295,7 @@ async function doPaymentNew() {
       $('invNumber').textContent = persistedInvoice;
       $('invName').textContent = fName;
       $('invPhone').textContent = phone;
-      $('invPayment').textContent = paymentLabel;
+      $('invPayment').textContent = 'Dikonfirmasi via WhatsApp';
       $('invType').textContent = addr ? 'Antar ke Alamat' : 'Dikonfirmasi via WhatsApp';
       $('invDate').textContent = dateStr;
       $('invTotal').textContent = fmt(data.total_amount || order.total);
