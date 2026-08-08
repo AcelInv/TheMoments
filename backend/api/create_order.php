@@ -108,7 +108,11 @@ try {
     foreach ($lineItems as $line) {
         $insertItem->execute([':order_id' => $orderId] + $line);
     }
-    $method = in_array(($data->payment_method ?? ''), ['qris', 'transfer', 'bank_transfer', 'ewallet'], true) ? $data->payment_method : 'qris';
+    $method = strtolower(trim((string) ($data->payment_method ?? '')));
+    $allowedMethods = ['qris', 'transfer', 'bank_transfer', 'ewallet', 'cash'];
+    if (!in_array($method, $allowedMethods, true)) {
+        throw new Exception('Metode pembayaran tidak valid.');
+    }
     $db->prepare("INSERT INTO payments (order_id, payment_method, payment_status, amount) VALUES (?, ?, 'belum_bayar', ?)")
        ->execute([$orderId, $method, $total]);
     $db->prepare("DELETE FROM carts WHERE user_id = ?")->execute([$userId]);

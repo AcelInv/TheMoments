@@ -2175,7 +2175,15 @@ async function doPaymentNew() {
 
   const addr = $('coAddress') ? $('coAddress').value.trim() : '';
   const note = $('coNote') ? $('coNote').value.trim() : '';
-  const payMethod = 'qris';
+  const selectedPayment = document.querySelector('input[name="coPaymentMethod"]:checked');
+  const payMethod = selectedPayment ? selectedPayment.value : 'qris';
+  const paymentLabels = {
+    qris: 'QRIS',
+    transfer: 'Transfer Bank',
+    cash: 'Bayar di Tempat (Cash)'
+  };
+  const paymentLabel = paymentLabels[payMethod] || 'QRIS';
+  state.payMethod = payMethod;
 
   const orderId = 'FLR-' + new Date().toISOString().slice(0, 10).replace(/-/g, '') + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();
 
@@ -2238,6 +2246,7 @@ async function doPaymentNew() {
       msg += `*Saya ingin memesan:*\n\n`;
       msg += `${itemLines}\n\n`;
       msg += `*Total: ${fmt(order.total)}*\n`;
+      msg += `*Metode Pembayaran:* ${paymentLabel}\n`;
       msg += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
       msg += `*Nama:* ${fName}\n`;
       msg += `*Telepon:* ${phone}\n`;
@@ -2258,7 +2267,7 @@ async function doPaymentNew() {
       $('invNumber').textContent = persistedInvoice;
       $('invName').textContent = fName;
       $('invPhone').textContent = phone;
-      $('invPayment').textContent = 'Dikonfirmasi via WhatsApp';
+      $('invPayment').textContent = paymentLabel;
       $('invType').textContent = addr ? 'Antar ke Alamat' : 'Dikonfirmasi via WhatsApp';
       $('invDate').textContent = dateStr;
       $('invTotal').textContent = fmt(data.total_amount || order.total);

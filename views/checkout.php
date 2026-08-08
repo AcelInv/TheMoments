@@ -40,6 +40,16 @@
             <textarea id="coNote" rows="3" placeholder="Tulis pesan untuk penerima atau catatan khusus lainnya."></textarea>
           </div>
 
+          <div class="co-group" id="coPaymentMethodGroup">
+            <label>Metode Pembayaran*</label>
+            <div class="co-radio-group" role="radiogroup" aria-label="Metode Pembayaran">
+              <label><input type="radio" name="coPaymentMethod" value="qris" checked> QRIS</label>
+              <label><input type="radio" name="coPaymentMethod" value="transfer"> Transfer Bank</label>
+              <label><input type="radio" name="coPaymentMethod" value="cash"> Bayar di Tempat (Cash)</label>
+            </div>
+            <small class="co-hint">Status pembayaran akan dikonfirmasi oleh admin.</small>
+          </div>
+
         </div>
 
         <div class="co-right">
