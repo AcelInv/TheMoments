@@ -1351,22 +1351,34 @@
   }
 
   .panel-title {
-    font-size: 28px;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
+    font-size: 26px;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
   }
 
   .stat-cards,
   .stat-grid,
   .user-stats {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    margin-bottom: 24px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
   }
 
   .us-card,
   .stat-card {
-    padding: 18px 16px;
+    min-height: 0;
+    padding: 15px 14px;
+  }
+
+  .us-card .num,
+  .stat-val {
+    font-size: 24px;
+  }
+
+  .us-card .lbl,
+  .stat-lbl {
+    font-size: 9px;
+    letter-spacing: 1px;
   }
 
   .dash-section-head {
