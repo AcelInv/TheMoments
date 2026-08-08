@@ -18,7 +18,7 @@
     <div class="home-trust-strip" aria-label="Keunggulan The Moments">
       <span>Bunga segar pilihan</span>
       <span>Dirangkai dengan detail</span>
-      <span>Pengiriman terjadwal</span>
+      <span>Terpercaya</span>
     </div>
 
     <!-- KATALOG -->
