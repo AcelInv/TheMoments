@@ -2766,8 +2766,16 @@ footer {
   }
 
   .sec-header {
+    flex-direction: column;
     align-items: flex-start;
+    gap: 16px;
     margin-bottom: 30px;
+  }
+
+  /* Scroll-triggered reveal can remain invisible on some mobile browsers. */
+  .reveal {
+    opacity: 1;
+    transform: none !important;
   }
 
   .sec-title {
@@ -2779,6 +2787,7 @@ footer {
   }
 
   .view-all-btn {
+    align-self: flex-start;
     padding: 9px 14px;
     font-size: 12px;
   }
@@ -2798,7 +2807,8 @@ footer {
   }
 
   .prod-img {
-    aspect-ratio: 1 / 1.08;
+    height: min(62vw, 220px);
+    aspect-ratio: auto;
   }
 
   .featured-banner {
