@@ -1260,6 +1260,21 @@ function renderTrendKpi() {
     _kpiCard('Puncak Lonjakan', peakMonth.month + ' (' + fmt(peakMonth.total_penjualan) + ')', 'gold');
 }
 
+// Label ringkas khusus grafik laporan. Menggunakan satuan Indonesia agar
+// angka tidak tampil sebagai format bahasa Inggris seperti "0.1M".
+function formatTrendCurrency(value) {
+  const amount = Number(value) || 0;
+  const format = (number) => new Intl.NumberFormat('id-ID', {
+    maximumFractionDigits: 1
+  }).format(number);
+
+  if (amount >= 1_000_000_000_000) return `Rp ${format(amount / 1_000_000_000_000)} T`;
+  if (amount >= 1_000_000_000) return `Rp ${format(amount / 1_000_000_000)} M`;
+  if (amount >= 1_000_000) return `Rp ${format(amount / 1_000_000)} Jt`;
+  if (amount >= 1_000) return `Rp ${format(amount / 1_000)} Rb`;
+  return `Rp ${format(amount)}`;
+}
+
 function renderTrendChart() {
   const canvas = $('trendCanvas');
   if (!canvas) return;
@@ -1307,11 +1322,9 @@ function renderTrendChart() {
     ctx.stroke();
     ctx.setLineDash([]);
 
-    let labelStr = yVal.toLocaleString('id-ID');
-    if (metric === 'total_penjualan') {
-      if (yVal >= 1000000) labelStr = (yVal / 1000000).toFixed(1) + ' Jt';
-      else labelStr = (yVal / 1000).toFixed(0) + ' Rb';
-    }
+    const labelStr = metric === 'total_penjualan'
+      ? formatTrendCurrency(yVal)
+      : yVal.toLocaleString('id-ID');
     ctx.fillText(labelStr, padLeft - 10, yPos + 4);
   }
 
@@ -1407,8 +1420,9 @@ function renderTrendChart() {
     // Value text above point
     ctx.fillStyle = '#1A1512';
     ctx.font = '600 11px Jost, sans-serif';
-    let valStr = pt.val.toLocaleString('id-ID');
-    if (metric === 'total_penjualan') valStr = (pt.val / 1000000).toFixed(1) + 'M';
+    const valStr = metric === 'total_penjualan'
+      ? formatTrendCurrency(pt.val)
+      : pt.val.toLocaleString('id-ID');
     ctx.fillText(valStr, pt.x, pt.y - 12);
   });
 
